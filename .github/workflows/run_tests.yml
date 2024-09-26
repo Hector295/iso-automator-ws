@@ -1,0 +1,27 @@
+name: Run Test Scripts on PR and Commit
+
+on:
+  pull_request:
+    branches:
+      - '**'  # any branch
+  push:
+    branches:
+      - '**'  # any branch
+
+jobs:
+  run-test-scripts:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run iso-generator tests
+      run: |
+        cd iso-generator
+        chmod +x run_tests.sh
+        ./run_tests.sh
+
+    - name: Run is-installer tests
+      run: |
+        cd is-installer
+        chmod +x run_tests.sh
+        ./run_tests.sh
