@@ -12,7 +12,7 @@ jobs:
   run-linter-test:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Run iso-generator tests
       run: cd iso-generator && ./run_tests.sh
