@@ -1,0 +1,30 @@
+name: Version Management
+
+on:
+  push:
+    branches:
+      - 'release-*'  # only on pushes to release branches
+
+jobs:
+  update-version:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Get the version
+      id: get_version
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        VERSION=${BRANCH_NAME#release-}
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Update version file
+      run: |
+        echo ${{ steps.get_version.outputs.VERSION }} > VERSION
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add VERSION
+        git commit -m "Bump version to ${{ steps.get_version.outputs.VERSION }}"
+        git push
