@@ -3,7 +3,7 @@ name: Version Management
 on:
   push:
     branches:
-      - 'release-*'  # only on pushes to release branches
+      - 'release-*'  # This will trigger only on pushes to release branches
 
 jobs:
   update-version:
@@ -23,11 +23,16 @@ jobs:
 
     - name: Update version file
       run: |
-        echo ${{ steps.get_version.outputs.VERSION }} > VERSION
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add VERSION
-        git commit -m "Bump version to ${{ steps.get_version.outputs.VERSION }}"
-        git push
+        if [ ! -f VERSION ] || [ "$(cat VERSION)" != "${{ steps.get_version.outputs.VERSION }}" ]; then
+          echo ${{ steps.get_version.outputs.VERSION }} > VERSION
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add VERSION
+          git commit -m "Bump version to ${{ steps.get_version.outputs.VERSION }}"
+          git push
+          echo "Version file updated to ${{ steps.get_version.outputs.VERSION }}"
+        else
+          echo "Version file already up to date with ${{ steps.get_version.outputs.VERSION }}"
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
